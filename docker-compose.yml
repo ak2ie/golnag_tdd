@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+    app:
+        working_dir: "/app"
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        volumes:
+            - type: bind
+              source: "."
+              target: "/app"
+        ports:
+            - "8080:8080"
+            - "2345:2345"
+        depends_on:
+            - db
+    db:
+        image: postgres:latest
+        container_name: go-postgres
+        ports:
+            - "5435:5432"
+        environment:
+            - POSTGRES_PASSWORD=password
+            - POSTGRES_USER=postgres
+            - POSTGRES_DB=db
+        volumes:
+            - psql-data:/var/lib/postgresql/data
+            - ./postgresql/init:/docker-entrypoint-initdb.d
+volumes:
+    psql-data:
